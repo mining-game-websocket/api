@@ -6,6 +6,26 @@ export default new Elysia({
   prefix: '/mineral',
 })
   .use(bearerService)
+  .model({
+    mineral: t.Object({
+      name: t.String(),
+      rarity: t.Number(),
+      player: t.Object({
+        id: t.String(),
+        username: t.String(),
+        displayName: t.String(),
+        mined: t.Number(),
+        pickaxe: t.String(),
+      }),
+      cave: t.Optional(
+        t.Object({
+          name: t.String(),
+          rarity: t.Number(),
+        })
+      ),
+      event: t.Optional(t.String()),
+    }),
+  })
   .ws('/ws', {
     open(ws) {
       ws.subscribe('mined');
@@ -15,4 +35,18 @@ export default new Elysia({
     },
   })
   .use(getGame)
-  .post('/mined', ({ game }) => 'hi');
+  .post(
+    '/mined',
+    ({ game, body, server }) => {
+      server?.publish(
+        'mined',
+        JSON.stringify({
+          mineral: body,
+          game: game,
+        })
+      );
+    },
+    {
+      body: 'mineral',
+    }
+  );

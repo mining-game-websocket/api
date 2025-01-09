@@ -10,6 +10,10 @@ export default new Elysia({
     mineral: t.Object({
       name: t.String(),
       rarity: t.Number(),
+      tier: t.Object({
+        name: t.String(),
+        color: t.Array(t.Number(), { maxItems: 3, minItems: 3 }),
+      }),
       player: t.Object({
         id: t.String(),
         username: t.String(),
